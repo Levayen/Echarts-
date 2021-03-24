@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./js/jqueryV172.js"></script>
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/china.js"></script>
+    <title>Document</title>
+    <style>
+        .wrap{
+            width: 100%;
+        }
+        .map{
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="map" id="main" style="width: 600px;height:600px;">
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            //定义数据
+            var data = [
+                {name: '深圳', value: [114.07,22.62,0]},
+                {name: '北京', value: [116.46,39.92,0]},
+                {name: '杭州', value: [120.19,29.96,0]},
+                {name: '苏州', value: [120.62,32.62,0]},
+                {name: '成都', value: [104.06,30.67,0]},
+                {name: '广州', value: [113.23,23.76,0]},
+                {name: '上海', value: [121.48,31.22,0]},
+            ]
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main'));
+            
+            // 指定图表的配置项和数据
+            var option = {
+                tooltip : {
+                    trigger: 'none',
+                },
+                geo: {
+                    map: 'china',
+                    aspectScale: 0.75, //长宽比
+                    layoutCenter: ['50%', '50%'],
+                    layoutSize: 600, 
+                    itemStyle: {
+                        // 定义样式
+                        normal: {					// 普通状态下的样式
+                            areaColor: '#cfcfcf',
+                            borderColor: '#fff',
+                            show: false
+                        },
+                        emphasis: {					// 高亮状态下的样式
+                            areaColor: '#cfcfcf',
+                            borderColor: '#fff',
+                            show: false
+                        }
+                    },
+                    select:{
+                        label:{
+                            show: false
+                        },
+                        itemStyle:{
+                            color: '#fff'
+                        }
+                    },
+                    label:{ //不显示省份名称
+                        normal: {
+                            show: false
+                        },
+                        emphasis: {
+                            show: false
+                        }
+                    },
+                },
+                series : [
+                    {
+                        coordinateSystem: 'geo', // series坐标系类型
+                        type: 'scatter', //散点图
+                        mapType: 'china',
+                        roam: false,
+                        data: data,
+                        symbol:'path://M512 736.981333L775.68 896l-69.76-299.904L938.666667 394.410667l-306.816-26.325334L512 85.333333 392.149333 368.085333 85.333333 394.410667l232.746667 201.685333L248.32 896z',
+                        symbolSize: 12,
+                        encode: {
+                            value: 2
+                        },
+                        showEffectOn: 'render',
+                        rippleEffect: {
+                            brushType: 'stroke'
+                        },
+                        hoverAnimation: true,
+                        label: {
+                            formatter: '{b}',
+                            position: 'right',
+                            lineHeight : 15,
+                            show: true,
+                            emphasis:{
+                                textStyle:{
+                                    color: '#EC652A' //设置活动状态下字体样式，会跟随散点高亮
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            normal: {			// 散点图标普通状态下的样式
+                                color: '#333'
+                            },
+                            emphasis: {			// 散点图标高亮状态下的样式
+                                color:'#EC652A',
+                            },
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        },
+                        zlevel: 1,
+                    }
+                ]
+            };
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+            //点击事件
+            myChart.on('click', function (params) {
+            //点击高亮
+            if(params.componentType === 'series'){
+                myChart.dispatchAction({
+                    type: 'downplay',
+                    seriesIndex: 0,
+                }); 
+                myChart.dispatchAction({
+                    type: 'highlight',
+                    seriesIndex: 0,
+                    // 使用 dataIndex 来定位节点。
+                    dataIndex: params.dataIndex
+                });   
+            }
+            });
+            // 首次进入默认高亮的点
+            myChart.dispatchAction({
+                type: 'highlight',
+                seriesIndex: 0,
+                // 使用 dataIndex 来定位节点。（定义的数据的下标）
+                dataIndex: 0
+            });
+        })
+        </script>
+</body>
+</html>
